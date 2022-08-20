@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-yellow-orange: #FFA83F;
+  --vt-yellow-soft: #FFBE26;
+  --vt-yellow-light: #FFC540;
+
+  --vt-red: #e31414;
+  --vt-blue: #408cff;
+
+  --vt-white: #FFFFFF;
+  --vt-gray: #F7F7F7;
+  --vt-gray-soft: #ebebeb;
+  --vt-gray-light: #EDEDED;
+  --vt-gray-relight: #999999;
+  --vt-gray-black: #303030;
+
+  --vt-black: #000000;
+  --vt-black-soft: #141414;
+  --vt-black-light: #242424;
+  --vt-black-relight: #2e2e2e;
+
+  --vt-text-black: #303030;
+  --vt-text-gray: #999999;
+}
+
+/* semantic color variables for this project */
+:root {
+  font-size: 10px;
+  --color-base: var(--vt-white);
+  --color-background: var(--vt-gray);
+  --color-background-light: var(--vt-white);
+  --color-background-soft: var(--vt-gray-soft);
+
+  --color-hover-card: var(--color-background);
+
+  --color-heading: var(--vt-black-light);
+  --color-text: var(--vt-text-gray);
+
+  --color-acent: var(--vt-red);
+  --color-acent-2: var(--vt-blue);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root{
+    --color-base: var(--vt-black);
+    --color-background: var(--vt-black);
+    --color-background-soft: var(--vt-black-soft);
+    --color-background-light: var(--vt-black-light);
+    --color-background-relight: var(--vt-black-relight);
+    
+    --color-hover-card: var(--color-background-light);
+
+    --color-heading: var(--vt-gray-light);
+    --color-text: var(--vt-text-gray);
+  }
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  caret-color: var(--vt-yellow-orange);
+  font-family: 'Roboto', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background);
+  font-size: 1.6rem;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  overflow: hidden;
+}

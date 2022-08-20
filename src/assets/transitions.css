@@ -1,0 +1,137 @@
+@import './base.css';
+
+/* Modal Transitions */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all .2s;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-enter-to,
+.fade-leave-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px)
+}
+
+/* Route Transitions */
+
+.routeToLeft-enter-active,
+.routeToLeft-leave-active,
+.routeToRight-enter-active,
+.routeToRight-leave-active {
+  transition: all .3s;
+}
+
+.routeToLeft-enter-from {
+  transform: translateX(100%);
+}
+
+.routeToLeft-leave-to {
+  transform: translateX(-100%);
+}
+
+.routeToRight-enter-from {
+  transform: translateX(-100%);
+}
+
+.routeToRight-leave-to {
+  transform: translateX(100%);
+}
+
+/* Keyframes */ 
+
+@keyframes hoverAnimate {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.95);
+    background-color: var(--color-hover-card);
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: var(--color-background-light);
+  }
+}
+
+@keyframes hideToTop {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    margin-top: -40px;
+  }
+}
+
+@keyframes slideTop {
+  0% {
+    opacity: 0;
+    margin-top: -10px;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hideToRight {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    margin-right: -60px;
+  }
+}
+
+@keyframes slideRight {
+  0% {
+    opacity: 0;
+    margin-right: -60px;
+  }
+
+  100% {
+    opacity: 1;
+    margin-right: 0;
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade2 {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
