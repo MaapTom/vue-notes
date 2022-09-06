@@ -8,9 +8,12 @@ function isToday(compareDate) {
   const arrayDate = [compareDate.date, compareDate.month, compareDate.year];
 
   arrayDate.forEach((currentDate, index) => {
-    sumDate += NEGATIVE_NUM  * (currentDate - arrayActualDate[index]);
+    sumDate += currentDate - arrayActualDate[index];
   })
 
+  if (sumDate < 0) 
+    return NEGATIVE_NUM * sumDate;
+  
   return sumDate;
 }
 
