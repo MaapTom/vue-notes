@@ -1,4 +1,5 @@
 <script>
+  import { nanoid } from 'nanoid';
   import VueCookie from 'vue-cookie';
 
   export default {
@@ -7,37 +8,39 @@
     },
     created() {
       const initialNotesIsSetted = VueCookie.get('initialNotes');
+
       if (initialNotesIsSetted !== 'Yes')
         this.setInitialNotes();
     },
     methods: {
-      setInitialNotes() {
-        const storageNotes = localStorage.getItem('#_content-notes_#');
-        let newDateToExpires = new Date(2090,0,1);
-        let initialStorage = [
+      async setInitialNotes() {
+        const storageNotes = JSON.parse(localStorage.getItem('#_content-notes_#'));
+        let newStorageNotes = [];
+
+        newStorageNotes.push(
           { 
-            id: 1,
+            id: await nanoid(),
             titleNote: 'Criando uma anotação',
             textNote: 'Clique em +, no canto inferior direito para criar uma anotação!',
             date: {"date": 6, "month": 8, "year": 2022, "hour": 19, "minutes": 5}
           },
           { 
-            id: 10,
+            id: await nanoid(),
             titleNote: '',
             textNote: 'Experimente um novo estilo de layout das notas, alternando entre lista e grade no menu!',
             date: {"date": 6, "month": 8, "year": 2022, "hour":19, "minutes": 5}
           },
           { 
-            id: 11,
+            id: await nanoid(),
             titleNote: 'Dica:',
             textNote: 'Experimente no modo "Design responsivo do navegador", :3',
             date: {"date": 6, "month": 8, "year": 2022, "hour":19, "minutes": 5}
           },
-          ...storageNotes || []
-        ];
+          ...storageNotes || [],
+        );
 
-        localStorage.setItem('#_content-notes_#', JSON.stringify(initialStorage));
-        VueCookie.set('initialNotes', 'Yes', newDateToExpires.toGMTString());
+        localStorage.setItem('#_content-notes_#', JSON.stringify(newStorageNotes));
+        VueCookie.set('initialNotes', 'Yes', { expires: '1Y'});
       }
     }
   }
