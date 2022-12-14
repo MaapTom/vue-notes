@@ -1,47 +1,47 @@
-<script>
-  import Close from './icons/Close.vue';
+<script setup lang="ts">
+import { watch, ref } from "vue";
+import Close from "./icons/Close.vue";
 
-  export default {
-    props: ['placeholder'],
-    emits: ['changeSearchText', 'isFocused'],
-    data() {
-      return {
-        searchBarText: '',
-        isButtonCancelActive: false,
-      }
-    },
-    components: {
-      Close,
-    },
-    watch: {
-      searchBarText(currentText) {
-        this.$emit('changeSearchText', currentText)
-      }
-    },
-    methods: {
-      setClearInput() {
-        this.searchBarText = '';
-        this.$refs.inputSearchBar.value = '';
-      },
-      handleClickInput() {
-        this.setAnimate();
-        this.$emit('isFocused', true);
-        this.isButtonCancelActive = true;
-      },
-      setCloseSearchBar() {
-        this.setClearInput();
-        this.setEndAnimate();
-        this.$emit('isFocused', false);
-        this.isButtonCancelActive = false;
-      },
-      setAnimate() {
-        this.$refs.buttonCancel.classList.add('animate-button-cancel');
-      },
-      setEndAnimate() {
-        this.$refs.buttonCancel.classList.remove('animate-button-cancel');
-      }
-    }
-  }
+interface Props {
+  placeholder: string;
+}
+defineProps<Props>();
+const emits = defineEmits<{
+  (e: "changeSearchText", textContent: string): void;
+  (e: "isFocused", isActive: boolean): void;
+}>();
+
+const input = ref<HTMLInputElement | null>(null);
+const button = ref<HTMLButtonElement | null>(null);
+const searchBarText = ref<string | null>("");
+
+watch(searchBarText, (currentText) => {
+  emits("changeSearchText", currentText);
+});
+
+function setClearInput() {
+  searchBarText.value = "";
+  input.value.value = "";
+}
+
+function handleClickInput() {
+  setAnimate();
+  emits("isFocused", true);
+}
+
+function setCloseSearchBar() {
+  setClearInput();
+  setEndAnimate();
+  emits("isFocused", false);
+}
+
+function setAnimate() {
+  button.value.classList.add("animate-button-cancel");
+}
+
+function setEndAnimate() {
+  button.value.classList.remove("animate-button-cancel");
+}
 </script>
 
 <template>
@@ -50,38 +50,27 @@
       <input
         type="text"
         id="input-search"
-        ref="inputSearchBar"
+        ref="input"
         class="input-search-bar"
         @click="handleClickInput"
         :placeholder="'Procurar ' + placeholder"
-        @input="event => searchBarText = event.target.value"
-      >
-      <label
-        for="input-search"
-        class="search-image"
-      >
-        <img src="./icons/search_icon.svg" alt="Search Icon">
+        @input="(event) => (searchBarText = event.target.value)"
+      />
+      <label for="input-search" class="search-image">
+        <img src="./icons/search_icon.svg" alt="Search Icon" />
       </label>
-      <a
-        v-show="searchBarText"
-        class="button-clear"
-        @click="setClearInput"
-      >
-        <Close/>
+      <a v-show="searchBarText" class="button-clear" @click="setClearInput">
+        <Close />
       </a>
     </span>
-    <a
-      ref="buttonCancel"
-      class="button-cancel"
-      @click="setCloseSearchBar"
-    >
+    <a ref="button" class="button-cancel" @click="setCloseSearchBar">
       Cancelar
     </a>
   </div>
 </template>
 
 <style scoped>
-@import '../assets/base.css';
+@import "../assets/base.css";
 
 #search-container {
   display: flex;
@@ -95,10 +84,10 @@
   width: 100%;
   position: relative;
 
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
-.input-search-bar{
+.input-search-bar {
   width: 100%;
   padding: 12px 42px;
 
@@ -129,7 +118,7 @@
   position: absolute;
   top: 25%;
   right: 12px;
-  
+
   background-color: var(--color-text);
   border-radius: 50%;
 }
@@ -140,15 +129,14 @@
   font-size: 1.4rem;
   color: var(--color-acent-2);
   cursor: pointer;
-  transition: all .3s;
-  animation: hideToRight .2s forwards;
+  transition: all 0.3s;
+  animation: hideToRight 0.2s forwards;
   visibility: hidden;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .animate-button-cancel {
-  animation: slideRight .2s forwards;
-  visibility:visible;
+  animation: slideRight 0.2s forwards;
+  visibility: visible;
 }
-
 </style>
