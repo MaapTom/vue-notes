@@ -52,8 +52,8 @@
         this.currentMode = options[currentMode];
         this.setToggleModal();
       },
-      setToggleHeader(searchBarState) {
-        if(searchBarState)
+      setToggleHeader(currentState) {
+        if(currentState)
           return this.toggleHeader = true;
         
         return this.toggleHeader = false;
@@ -69,26 +69,25 @@
 <template>
   <div>
     <HomeHeader
-      :is-active="toggleHeader"
-      @toggleModal='setToggleModal'
-
+      :isActive="toggleHeader"
+      @handleToggleModal='setToggleModal'
     />
 
     <main class="container">
       <TabNotes
         :noteItemMode="currentMode"
-        @toggleHeader="setToggleHeader"
+        @handleToggleHeader="setToggleHeader"
       ></TabNotes>
     </main>
 
     <ButtonCreate
-      :is-active="!toggleHeader"
+      :isActive="!toggleHeader"
       @handleClick="goCreateNote"
     />
 
     <ContainerModal
-      :is-active="toggleModal"
-      @changeStateModal="setToggleModal"
+      :isActive="toggleModal"
+      @handleToggleModal="setToggleModal"
     >
       <ul class="container-menu">
         <li @click="setToggleNoteMode(currentMode)">

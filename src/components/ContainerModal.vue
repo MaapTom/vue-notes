@@ -3,7 +3,7 @@
   defineProps({
     isActive: Boolean,
   });
-  defineEmits(['changeStateModal']);
+  defineEmits(['handleToggleModal']);
   
 </script>
 
@@ -13,7 +13,7 @@
       <section
         v-if="isActive"
         class="bg-modal"
-        @click.self="$emit('changeStateModal')"
+        @click.self="$emit('handleToggleModal')"
       >
         <slot></slot>
       </section>

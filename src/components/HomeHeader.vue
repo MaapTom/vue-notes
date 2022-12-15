@@ -6,7 +6,7 @@
   const props = defineProps({
     isActive: Boolean,
   });
-  defineEmits(['toggleModal']);
+  defineEmits(['handleToggleModal']);
   const header = ref(null);
 
   watchEffect(() => {
@@ -40,7 +40,7 @@
         </li>
         <li
           class="nav-item"
-          @click="$emit('toggleModal')"
+          @click="$emit('handleToggleModal')"
         >
           <Menu/>
         </li>

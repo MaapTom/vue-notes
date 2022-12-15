@@ -28,7 +28,7 @@
   });
 
   watch(() => props.paramSearch, (currentParam) => {
-    if(currentParam?.trim() == '') {
+    if(currentParam.trim() == '') {
       return (
         currentTextNote.value = formatTextNote(props.titleNote, props.textNote),
         currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote)
@@ -41,6 +41,22 @@
     return props.mode == 'Grid' ? 'grid-mode' : 'list-mode';
   });
 
+  function setAcentColor(compareText) {
+    const mirrorTextNote = formatTextNote(props.titleNote, props.textNote);
+    const mirrorTitleNote = formatTitleNote(props.titleNote,props.textNote);
+
+    currentTextNote.value = mirrorTextNote?.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
+    currentTitleNote.value = mirrorTitleNote?.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
+  }
+  
   function setAnimate() {
     li.value?.classList.add('animate-note');
   };
@@ -56,21 +72,6 @@
     }, 300)
   }
 
-  function setAcentColor(compareText) {
-    const mirrorTextNote = formatTextNote(props.titleNote, props.textNote);
-    const mirrorTitleNote = formatTitleNote(props.titleNote,props.textNote);
-
-    currentTextNote.value = mirrorTextNote.
-      replace(
-        compareText,
-        `<span style="color: red">${compareText}</span>`
-      );
-    currentTitleNote.value = mirrorTitleNote.
-      replace(
-        compareText,
-        `<span style="color: red">${compareText}</span>`
-      );
-  }
 
 </script>
 

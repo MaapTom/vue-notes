@@ -5,14 +5,14 @@ import Close from "./icons/Close.vue";
 defineProps({
   placeholder: String,
 });
-defineEmits(['changeSearchText', 'isFocused']);
+const emits = defineEmits(['isChanged', 'isFocused']);
 
 const input = ref(null);
 const button = ref(null);
 const searchBarText = ref("");
 
 watch(searchBarText, (currentText) => {
-  emits("changeSearchText", currentText);
+  emits("isChanged", currentText);
 });
 
 function setClearInput() {

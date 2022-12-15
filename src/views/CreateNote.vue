@@ -90,11 +90,10 @@
   <div>
     <NoteHeader
       :isNoteSaved="isNoteSaved"
-      :btnConfirmActive="isActiveBtnConfirm"
-      @toggleModal="setToggleModal"
-      @saveNote="handleSaveNote"
-      @changeNote="handleChangeNote"
-      @deleteNote="handleDeleteNote"
+      :isNoteEdited="isActiveBtnConfirm"
+      @handleToggleModal="setToggleModal"
+      @handleSaveNote="handleSaveNote"
+      @handleChangeNote="handleChangeNote"
     />
 
     <main class="inputs-container">
@@ -109,8 +108,8 @@
     </main>
 
     <ContainerModal
-      :isOpen="toggleModal"
-      @changeStateModal="setToggleModal"
+      :isActive="toggleModal"
+      @handleToggleModal="setToggleModal"
     >
       <ul class="container-menu">
         <li>

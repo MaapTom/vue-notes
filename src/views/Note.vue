@@ -92,11 +92,10 @@
 <template>
   <div>
     <NoteHeader
-      :is-note-saved="true"
-      :is-note-edited="isActiveBtnConfirm"
-      @toggle-modal="setToggleModal"
-      @change-note="handleChangeNote"
-      @delete-note="handleDeleteNote"
+      :isNoteSaved="true"
+      :isNoteEdited="isActiveBtnConfirm"
+      @handleToggleModal="setToggleModal"
+      @handleChangeNote="handleChangeNote"
     />
 
     <main class="inputs-container">
@@ -110,7 +109,10 @@
       />
     </main>
 
-    <ContainerModal :is-active="toggleModal" @change-state-modal="setToggleModal">
+    <ContainerModal
+      :isActive="toggleModal"
+      @handleToggleModal="setToggleModal"
+    >
       <ul class="container-menu">
         <li><a>Mover para</a></li>
         <li @click="handleDeleteNote"><a>Excluir</a></li>

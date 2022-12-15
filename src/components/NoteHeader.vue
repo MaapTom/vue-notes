@@ -9,18 +9,15 @@
     isNoteEdited: Boolean
   });
   const emits = defineEmits([
-    'saveNote',
-    'changeNote',
-    'toggleModal'
+    'handleSaveNote',
+    'handleChangeNote',
+    'handleToggleModal'
   ]);
 
   const router = useRouter();
 
   function goHome() {
-    if(props.isNoteSaved)
-      emits('changeNote');
-    
-    emits('saveNote');
+    props.isNoteSaved ? emits('handleChangeNote') : emits('handleSaveNote');
 
     setTimeout(() => {
       router.push('/');
@@ -38,7 +35,7 @@
         <template v-if="isNoteEdited">
           <li
             class="nav-item"
-            @click="isNoteSaved ? $emit('changeNote') : $emit('saveNote')"
+            @click="isNoteSaved ? $emit('handleChangeNote') : $emit('handleSaveNote')"
           >
             <Check/>
           </li>
@@ -46,7 +43,7 @@
         <template v-else>
           <li
             class="nav-item"
-            @click="$emit('toggleModal')"
+            @click="$emit('handleToggleModal')"
           >
             <Menu/>
           </li>

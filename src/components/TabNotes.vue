@@ -1,79 +1,50 @@
-<script>
+<script setup>
+  import { ref, watch, computed, onMounted } from 'vue';
   import { getNewStorage } from '../store/actions.js';
+  
+  import NoNotes from './icons/NoNotes.vue';
+  import NoteItem from './NoteItem.vue';
+  import SearchBar from './SearchBar.vue';
+  import LineSeparator from './LineSeparator.vue';
 
-  import NoNotes from "./icons/NoNotes.vue";
+  const props = defineProps({
+    noteItemMode: String,
+  });
+  const emit = defineEmits(['handleToggleHeader']);
 
-  import NoteItem from "./NoteItem.vue";
-  import SearchBar from "./SearchBar.vue";
-  import LineSeparator from "./LineSeparator.vue";
+  let mirrorNotes = [];
+  const currentNotes = ref([]);
+  const paramSearchBar = ref('');
+  const stateSearchBar = ref(false);
 
-  export default {
-    emits: ['toggleHeader'],
-    props: ['noteItemMode'],
-    data() {
-      return {
-        mirrorNotes: [],
-        currentNotes: [],
-        paramSearchBar: '',
-        isSearchBarActive: false,
-      }
-    },
-    components: {
-      NoNotes,
-      NoteItem,
-      SearchBar,
-      LineSeparator,
-    },
-    mounted() {
-      this.mirrorNotes = getNewStorage('#_content-notes_#');
-      const getStorageNotes = getNewStorage('#_content-notes_#');
-      this.currentNotes = getStorageNotes ? getStorageNotes.reverse() : [];
-    },
-    computed: {
-      styleNoteMode() {
-        const options = {
-          'Grid': 'grid-container',
-          'List': 'list-container',
-        }
+  onMounted(() => {
+    const storageNotes = getNewStorage('#_content-notes_#');
+    mirrorNotes = storageNotes;
+    currentNotes.value = storageNotes.reverse();
+  });
 
-        return options[this.noteItemMode];
-      }
-    },
-    watch: {
-      paramSearchBar(textSearched) {
-        this.filterNotes(textSearched);
-      }
-    },
-    methods: {
-      setSearchText(currentParamSearch) {
-        this.paramSearchBar = currentParamSearch;
-      },
-      filterNotes(currentParam) {
-        if (currentParam == '')
-          return this.currentNotes = this.mirrorNotes.reverse();
+  watch(paramSearchBar, (currentParam) => {
+    if(currentParam == '')
+      return currentNotes.value = [...mirrorNotes].reverse();
+    
+    currentNotes.value = mirrorNotes.filter(({titleNote, textNote}) => {
+      return (
+        titleNote.indexOf(currentParam) != -1
+        ||
+        textNote.indexOf(currentParam) != -1
+      );
+    })
+  });
 
-        this.currentNotes = this.mirrorNotes.filter((eachNote) => {
-          return this.verifyExistsInNote(
-            eachNote.titleNote,
-            eachNote.textNote,
-            currentParam
-          );
-        })
-      },
-      verifyExistsInNote(receivedTitleNote, receivedTextNote, compareText) {
-        const NEGATIVE_NUM = -1;
-        return (
-          receivedTextNote.indexOf(compareText) != NEGATIVE_NUM
-          ||
-          receivedTitleNote.indexOf(compareText) != NEGATIVE_NUM
-        );
-      },
-      handleSearchBar(stateSearchBar) {
-        this.$emit('toggleHeader', stateSearchBar);
-        this.isSearchBarActive = stateSearchBar;
-      }
-    }
+  const styleNoteMode = computed(() => {
+    return props.noteItemMode == 'Grid' ? 'grid-container' : 'list-container';
+  });
+
+  function handleToggleHeader(currentState) {
+    emit('handleToggleHeader', currentState);
+    stateSearchBar.value = currentState;
   }
+
 </script>
 
 <template>
@@ -81,10 +52,10 @@
     <div class="list-notes">
       <SearchBar
         placeholder="anotações"
-        @isFocused="handleSearchBar"
-        @changeSearchText="setSearchText"
+        @isFocused="handleToggleHeader"
+        @isChanged="(currentText) => paramSearchBar = currentText"
       />
-      <LineSeparator v-show="isSearchBarActive"/>
+      <LineSeparator v-show="stateSearchBar"/>
       <template v-if="currentNotes.length">
         <ul :class="styleNoteMode">
           <NoteItem 
