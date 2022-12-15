@@ -92,25 +92,25 @@
 <template>
   <div>
     <NoteHeader
-      :isNoteSaved="true"
-      :btnConfirmActive="isActiveBtnConfirm"
-      @toggleModal="setToggleModal"
-      @changeNote="handleChangeNote"
-      @deleteNote="handleDeleteNote"
+      :is-note-saved="true"
+      :is-note-edited="isActiveBtnConfirm"
+      @toggle-modal="setToggleModal"
+      @change-note="handleChangeNote"
+      @delete-note="handleDeleteNote"
     />
 
     <main class="inputs-container">
       <TitleInput
         :content="titleNote"
-        @changeContentTitleBox="setTitleInput"
+        @change-content-title-box="setTitleInput"
       />
       <TextInput
         :content="textNote"
-        @changeContentTextBox="setTextNote"
+        @change-content-text-box="setTextNote"
       />
     </main>
 
-    <ContainerModal :isOpen="toggleModal" @changeStateModal="setToggleModal">
+    <ContainerModal :is-active="toggleModal" @change-state-modal="setToggleModal">
       <ul class="container-menu">
         <li><a>Mover para</a></li>
         <li @click="handleDeleteNote"><a>Excluir</a></li>

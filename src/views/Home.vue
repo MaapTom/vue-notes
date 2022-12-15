@@ -69,7 +69,7 @@
 <template>
   <div>
     <HomeHeader
-      :initAnimate="toggleHeader"
+      :is-active="toggleHeader"
       @toggleModal='setToggleModal'
 
     />
@@ -82,12 +82,12 @@
     </main>
 
     <ButtonCreate
-      :active="!toggleHeader"
+      :is-active="!toggleHeader"
       @handleClick="goCreateNote"
     />
 
     <ContainerModal
-      :isOpen="toggleModal"
+      :is-active="toggleModal"
       @changeStateModal="setToggleModal"
     >
       <ul class="container-menu">

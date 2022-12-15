@@ -1,55 +1,44 @@
-<script>
+<script setup>
+  import { useRouter } from 'vue-router';
   import Menu from './icons/Menu.vue';
   import Check from './icons/Check.vue';
   import LeftArrow from './icons/LeftArrow.vue';
 
-  export default {
-    props: ['isNoteSaved', 'btnConfirmActive'],
-    emits: ['saveNote', 'changeNote', 'deleteNote', 'toggleModal'],
-    data() {
-      return {}
-    },
-    components: {
-      Menu,
-      Check,
-      LeftArrow
-    },
-    methods: {
-      emitSaveNote() {
-        this.$emit('saveNote');
-      },
-      emitChangeNote() {
-        if (this.btnConfirmActive)
-          this.$emit('changeNote');
-      },
-      emitDeleteNote() {
-        this.$emit('deleteNote');
-      },
-      emitToggleModal() {
-        this.$emit('toggleModal');
-      },
-      goHome() {
-        setTimeout(() => {
-          this.$router.push('/');
-        })
-      }
-    }
+  const props = defineProps({
+    isNoteSaved: Boolean,
+    isNoteEdited: Boolean
+  });
+  const emits = defineEmits([
+    'saveNote',
+    'changeNote',
+    'toggleModal'
+  ]);
+
+  const router = useRouter();
+
+  function goHome() {
+    if(props.isNoteSaved)
+      emits('changeNote');
+    
+    emits('saveNote');
+
+    setTimeout(() => {
+      router.push('/');
+    })
   }
+
 </script>
 <template>
   <header id="container">
     <nav id="navigation-container">
       <ul id="list-items">
-        <li
-          class="nav-item"
-          v-on="isNoteSaved ? {click: emitChangeNote} : {click: emitSaveNote}"
-        >
+        <li class="nav-item">
           <LeftArrow @click="goHome"/>
         </li>
-        <template v-if="btnConfirmActive">
+        <template v-if="isNoteEdited">
           <li
             class="nav-item"
-            v-on="isNoteSaved ? {click: emitChangeNote} : {click: emitSaveNote}"
+            @click="isNoteSaved ? $emit('changeNote') : $emit('saveNote')"
           >
             <Check/>
           </li>
@@ -57,7 +46,7 @@
         <template v-else>
           <li
             class="nav-item"
-            @click="emitToggleModal"
+            @click="$emit('toggleModal')"
           >
             <Menu/>
           </li>

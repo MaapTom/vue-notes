@@ -1,80 +1,77 @@
-<script>
+<script setup>
+  import { ref, onMounted, watch, computed } from 'vue';
+  import { useRouter } from 'vue-router';
   import filterDate from '../utils/filterDate';
   import { formatTitleNote, formatTextNote } from '../utils/formatText';
 
-  export default {
-    props: ['idNote','titleNote', 'textNote', 'date', 'paramSearch', 'mode'],
-    data() {
-      return {
-        currentDate: '',
-        currentTextNote: '',
-        currentTitleNote: '',
-        mirrorTextNote: '',
-        mirrorTitleNote: '',
-      }
-    },
-    mounted() {
-      this.currentDate = filterDate(this.date);
-      this.currentTextNote = formatTextNote(this.titleNote, this.textNote);
-      this.currentTitleNote = formatTitleNote(this.titleNote, this.textNote);
+  const props = defineProps({
+    idNote: String,
+    titleNote: String,
+    textNote: String,
+    date: Object,
+    paramSearch: String,
+    mode: String,
+  });
 
-      this.mirrorTextNote = formatTextNote(this.titleNote, this.textNote);
-      this.mirrorTitleNote = formatTitleNote(this.titleNote, this.textNote);
+  const router = useRouter();
+  const li = ref(null);
+  const dateCreated = ref('');
+  const currentTextNote = ref('');
+  const currentTitleNote = ref('');
 
-      this.setAcentColor(this.paramSearch);
-    },
-    watch: {
-      paramSearch(currentParam) {
-        this.setAcentColor(currentParam);
-      }
-    },
-    computed: {
-      noteMode() {
-        const options = {
-          'Grid': 'grid-mode',
-          'List': 'list-mode',
-        }
+  onMounted(() => {
+    dateCreated.value = filterDate(props.date);
+    currentTextNote.value = formatTextNote(props.titleNote, props.textNote);
+    currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote);
 
-        return options[this.mode];
-      }
-    },
-    methods: {
-      setAnimate() {
-        this.$refs.noteItem.classList.add('animate-note');
-      },
-      setEndAnimate() {
-        this.$refs.noteItem.classList.remove('animate-note');
-      },
-      goNote(receivedIdNote) {
-        this.setAnimate();
-        setTimeout(() => {
-          this.$router.push(`/note/${receivedIdNote}`);
-        }, 300)
-      },
-      setAcentColor(compareText) {
-        if (compareText.trim() == '') {
-          return (
-            this.currentTitleNote = this.mirrorTitleNote,
-            this.currentTextNote = this.mirrorTextNote
-          );
-        }
+    setAcentColor(props.paramSearch);
+  });
 
-        this.currentTitleNote = 
-          this.mirrorTitleNote
-            ?
-            this.mirrorTitleNote.replace(compareText, `<span style="color: red">${compareText}</span>`)
-            : 
-            this.mirrorTitleNote;
-          
-        this.currentTextNote = 
-          this.mirrorTextNote 
-            ?
-            this.mirrorTextNote.replace(compareText, `<span style="color: red">${compareText}</span>`)
-            : 
-            this.mirrorTextNote;
-      }
+  watch(() => props.paramSearch, (currentParam) => {
+    if(currentParam?.trim() == '') {
+      return (
+        currentTextNote.value = formatTextNote(props.titleNote, props.textNote),
+        currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote)
+      );
     }
+    setAcentColor(currentParam);
+  });
+
+  const noteMode = computed(() => {
+    return props.mode == 'Grid' ? 'grid-mode' : 'list-mode';
+  });
+
+  function setAnimate() {
+    li.value?.classList.add('animate-note');
+  };
+
+  function setEndAnimate() {
+    li.value?.classList.remove('animate-note');
   }
+
+  function goNote(receivedIdNote) {
+    setAnimate();
+    setTimeout(() => {
+      router.push(`/note/${receivedIdNote}`);
+    }, 300)
+  }
+
+  function setAcentColor(compareText) {
+    const mirrorTextNote = formatTextNote(props.titleNote, props.textNote);
+    const mirrorTitleNote = formatTitleNote(props.titleNote,props.textNote);
+
+    currentTextNote.value = mirrorTextNote.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
+    currentTitleNote.value = mirrorTitleNote.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
+  }
+
 </script>
 
 <template>
@@ -84,12 +81,12 @@
     @click="goNote(this.idNote)"
     @touchmove="setAnimate()" 
     @touchend="setEndAnimate()"
-    ref="noteItem"
+    ref="li"
   >
     <h1 v-html="currentTitleNote"></h1>
     <p v-html="currentTextNote"></p>
     <span>
-      {{ currentDate }}
+      {{ dateCreated }}
     </span>
   </li>
 </template>

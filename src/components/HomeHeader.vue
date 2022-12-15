@@ -1,47 +1,36 @@
-<script>
+<script setup>
+  import { ref, watchEffect } from 'vue';
   import Book from './icons/Book.vue';
   import Menu from './icons/Menu.vue';
 
-  export default {
-    props: ['initAnimate'],
-    emits: ['toggleModal'],
-    data() {
-      return {
-      }
-    },
-    components: {
-      Book,
-      Menu,
-    },
-    watch: {
-      initAnimate: {
-        handler(currentState) {
-          if (currentState)
-            return this.hideHeader();
-          
-          return this.initialHeader();
-        }
-      }
-    },
-    methods: {
-      emitToggleModal() {
-        this.$emit('toggleModal');
-      },
-      hideHeader() {
-        this.$refs.headerElement.classList.remove('animate-header-init');
-        this.$refs.headerElement.classList.add('animate-header-hide');
-      },
-      initialHeader() {
-        this.$refs.headerElement.classList.remove('animate-header-hide');
-        this.$refs.headerElement.classList.add('animate-header-init');
-      }
-    }
+  const props = defineProps({
+    isActive: Boolean,
+  });
+  defineEmits(['toggleModal']);
+  const header = ref(null);
+
+  watchEffect(() => {
+    if(props.isActive) 
+      return hideHeader();
+    
+    return initialHeader();
+  })
+
+  function hideHeader() {
+    header.value?.classList.remove('animate-header-init');
+    header.value?.classList.add('animate-header-hide');
   }
+
+  function initialHeader() {
+    header.value?.classList.remove('animate-header-hide');
+    header.value?.classList.add('animate-header-init');
+  }
+
 </script>
 <template>
   <header
     id="container"
-    ref="headerElement"
+    ref="header"
   >
     <nav id="navigation-container">
       <ul id="list-items">
@@ -51,7 +40,7 @@
         </li>
         <li
           class="nav-item"
-          @click="emitToggleModal"
+          @click="$emit('toggleModal')"
         >
           <Menu/>
         </li>

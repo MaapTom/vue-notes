@@ -1,29 +1,18 @@
-<script>
+<script setup>
   import Plus from './icons/Plus.vue';
 
-  export default {
-    props: ['active'],
-    emits: ['handleClick'],
-    data() {
-      return {}
-    },
-    components: {
-      Plus,
-    },
-    methods: {
-      emitHandleClick() {
-        this.$emit('handleClick');
-      }
-    }
-  }
+  defineProps({
+    isActive: Boolean,
+  });
+  defineEmits(['handleClick']);
 </script>
 
 <template>
   <Teleport to="body">
     <a
       class="button-add"
-      v-show="active"
-      @click="emitHandleClick"
+      v-show="isActive"
+      @click="$emit('handleClick')"
     >
       <Plus/>
     </a>
