@@ -1,19 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { watch, ref } from "vue";
 import Close from "./icons/Close.vue";
 
-interface Props {
-  placeholder: string;
-}
-defineProps<Props>();
-const emits = defineEmits<{
-  (e: "changeSearchText", textContent: string): void;
-  (e: "isFocused", isActive: boolean): void;
-}>();
+defineProps({
+  placeholder: String,
+});
+defineEmits(['changeSearchText', 'isFocused']);
 
-const input = ref<HTMLInputElement | null>(null);
-const button = ref<HTMLButtonElement | null>(null);
-const searchBarText = ref<string | null>("");
+const input = ref(null);
+const button = ref(null);
+const searchBarText = ref("");
 
 watch(searchBarText, (currentText) => {
   emits("changeSearchText", currentText);
