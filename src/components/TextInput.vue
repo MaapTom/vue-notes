@@ -16,7 +16,7 @@ onMounted(() => {
 });
 
 watchEffect(() => {
-  props.content ? (inputContent.value = props.content) : "";
+  props.content ? (inputContent.value = props.content) : inputContent.value;
 });
 </script>
 
