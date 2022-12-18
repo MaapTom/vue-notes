@@ -113,10 +113,7 @@ export default {
     />
 
     <main class="inputs-container">
-      <TitleInput
-        :content="titleNote"
-        @change-content-title-box="setTitleInput"
-      />
+      <TitleInput :content="titleNote" @isChanged="setTitleInput" />
       <TextInput :content="textNote" @isChanged="setTextNote" />
     </main>
 

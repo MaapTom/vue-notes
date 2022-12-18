@@ -101,20 +101,11 @@ export default {
     />
 
     <main class="inputs-container">
-      <TitleInput 
-        :content="titleNote" 
-        @changeContentTitleBox="setTitleNote"
-      />
-      <TextInput 
-        :content="textNote" 
-        @isChanged="setTextNote"
-      />
+      <TitleInput :content="titleNote" @isChanged="setTitleNote" />
+      <TextInput :content="textNote" @isChanged="setTextNote" />
     </main>
 
-    <ContainerModal
-      :isActive="toggleModal"
-      @handleToggleModal="setToggleModal"
-    >
+    <ContainerModal :isActive="toggleModal" @handleToggleModal="setToggleModal">
       <ul class="container-menu">
         <li>
           <a>Mover para</a>
