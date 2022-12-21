@@ -102,7 +102,7 @@ export default {
 
     <main class="inputs-container">
       <TitleInput :content="titleNote" @isChanged="setTitleNote" />
-      <TextInput :content="textNote" @isChanged="setTextNote" />
+      <TextInput :content="textNote" @isChanged="setTextNote" focus />
     </main>
 
     <ContainerModal :isActive="toggleModal" @handleToggleModal="setToggleModal">

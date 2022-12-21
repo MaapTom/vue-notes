@@ -1,22 +1,19 @@
 <script setup>
-import { ref, onMounted, watchEffect } from "vue";
+import { ref, onMounted } from "vue";
 
 const props = defineProps({
   content: String,
+  focus: Boolean,
 });
 defineEmits(["isChanged"]);
 
 const textarea = ref(null);
-const inputContent = ref("");
 
 onMounted(() => {
-  setTimeout(() => {
-    props.content == "" ? textarea.value.focus() : textarea;
-  }, 300);
-});
-
-watchEffect(() => {
-  props.content ? (inputContent.value = props.content) : inputContent.value;
+  if (props.focus)
+    setTimeout(() => {
+      textarea.value.focus();
+    }, 300);
 });
 </script>
 
@@ -25,7 +22,7 @@ watchEffect(() => {
     ref="textarea"
     class="input-textnote"
     @input="(event) => $emit('isChanged', event.target.value)"
-    v-model="inputContent"
+    v-model="content"
   >
   </textarea>
 </template>
