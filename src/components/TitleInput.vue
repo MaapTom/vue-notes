@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watch, nextTick } from "vue";
+import { useResizeObserver } from '@vueuse/core';
 
 const props = defineProps({
   content: String,
@@ -9,24 +10,24 @@ const emit = defineEmits(["isChanged"]);
 const textarea = ref(null);
 const inputContent = ref("");
 
-watchEffect(() => {
-  props.content ? (inputContent.value = props.content) : inputContent.value;
-  textarea.value
-    ? (textarea.value.style.height = props.content.length + "px")
-    : "";
+nextTick(() => {
+  //Resize to initial render
+  textarea.value.style.height = textarea.value.scrollHeight + "px";
+});
+
+watch(inputContent, () => {
+  textarea.value.style.height = "auto";
+  textarea.value.style.height = (textarea.value.scrollHeight) + "px";
+});
+
+useResizeObserver(textarea, () => {
+  textarea.value.style.height = "auto";
+  textarea.value.style.height = textarea.value.scrollHeight + "px";
 });
 
 function handleChangeContent(currentText) {
   emit("isChanged", currentText);
   inputContent.value = currentText;
-  resizeInput();
-}
-
-function resizeInput() {
-  let currentScrollHeight = textarea.value.scrollHeight;
-
-  textarea.value.style.height = "5px";
-  textarea.value.style.height = currentScrollHeight + "px";
 }
 </script>
 
@@ -36,7 +37,7 @@ function resizeInput() {
     class="input-title"
     placeholder="Title"
     @input="(event) => handleChangeContent(event.target.value)"
-    v-model="inputContent"
+    v-model="content"
     rows="1"
   >
   </textarea>
@@ -56,7 +57,6 @@ function resizeInput() {
   font-weight: bold;
   background-color: var(--color-base);
   color: var(--color-heading);
-  border: none;
   outline: none;
   resize: none;
 }
