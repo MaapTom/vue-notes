@@ -37,7 +37,7 @@ function handleChangeContent(currentText) {
     class="input-title"
     placeholder="Title"
     @input="(event) => handleChangeContent(event.target.value)"
-    v-model="content"
+    :value="content"
     rows="1"
   >
   </textarea>

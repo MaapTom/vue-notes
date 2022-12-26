@@ -15,6 +15,7 @@ onMounted(() => {
       textarea.value.focus();
     }, 300);
 });
+
 </script>
 
 <template>
@@ -22,7 +23,7 @@ onMounted(() => {
     ref="textarea"
     class="input-textnote"
     @input="(event) => $emit('isChanged', event.target.value)"
-    v-model="content"
+    :value="content"
   >
   </textarea>
 </template>

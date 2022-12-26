@@ -1,120 +1,88 @@
-<script>
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useChangeObserver } from "../utils/changeObserver.js";
 import { setNote, setChangeNote, setDeleteNote } from "../store/actions.js";
-
-import Menu from "../components/icons/Menu.vue";
-import Check from "../components/icons/Check.vue";
-import LeftArrow from "../components/icons/LeftArrow.vue";
-
 import TextInput from "../components/TextInput.vue";
-import NoteHeader from "../components/NoteHeader.vue";
 import TitleInput from "../components/TitleInput.vue";
-import ContainerModal from "../components/ContainerModal.vue";
+import NoteHeader from "../components/NoteHeader.vue";
 
-export default {
-  data() {
-    return {
-      textNote: "",
-      titleNote: "",
-      currentNoteId: "",
-      isNoteSaved: false,
-      toggleModal: false,
-      isActiveBtnConfirm: false,
-    };
-  },
-  components: {
-    Menu,
-    Check,
-    LeftArrow,
-    TextInput,
-    NoteHeader,
-    TitleInput,
-    ContainerModal,
-  },
-  mounted() {
-    this.$watch(
-      ($data) => [$data.titleNote, $data.textNote],
-      () => {
-        if (this.titleNote.trim() != "" || this.textNote.trim() != "") {
-          this.isActiveBtnConfirm = true;
-        } else {
-          this.isActiveBtnConfirm = false;
-        }
-      }
+const router = useRouter();
+const textNote = ref("");
+const titleNote = ref("");
+const lastSavedText = ref("");
+const lastSavedTitle = ref("");
+const currentNoteId = ref("");
+const isNoteSaved = ref(false);
+const {
+  isNoteChanged
+} = useChangeObserver(lastSavedTitle, lastSavedText, titleNote, textNote);
+
+async function handleSaveNote() {
+  const response = await setNote(titleNote.value, textNote.value);
+
+  if (response.status) {
+    isNoteSaved.value = true;
+    isNoteChanged.value = false;
+    currentNoteId.value = response.noteId;
+    lastSavedText.value = textNote.value;
+    lastSavedTitle.value = titleNote.value;
+  }
+}
+
+function handleChangeNote() {
+  const response = setChangeNote(
+    currentNoteId.value,
+    titleNote.value,
+    textNote.value
+  );
+
+  if (response.status){
+    return (
+      isNoteChanged.value = false,
+      lastSavedText.value = textNote.value,
+      lastSavedTitle.value = titleNote.value
     );
-  },
-  methods: {
-    goHome() {
-      setTimeout(() => {
-        this.$router.push("/");
-      });
-    },
-    setTextNote(content) {
-      this.textNote = content;
-    },
-    setTitleNote(content) {
-      this.titleNote = content;
-    },
-    setToggleModal() {
-      this.toggleModal = !this.toggleModal;
-    },
-    async handleSaveNote() {
-      const response = await setNote(this.titleNote, this.textNote);
+  }
+}
 
-      if (response.status) {
-        this.isNoteSaved = true;
-        this.isActiveBtnConfirm = false;
-        this.currentNoteId = response.noteId;
-      }
-    },
-    handleChangeNote() {
-      const response = setChangeNote(
-        this.currentNoteId,
-        this.titleNote,
-        this.textNote
-      );
+function handleDeleteNote() {
+  if (isNoteSaved.value == false) return goHome();
+  const response = setDeleteNote(currentNoteId.value);
 
-      if (response.status) this.isActiveBtnConfirm = false;
-    },
-    handleDeleteNote() {
-      if (!this.isNoteSaved) return this.$router.push("/");
+  if (response.status) {
+    titleNote.value = "";
+    textNote.value = "";
+    goHome();
+  }
+}
 
-      const response = setDeleteNote(this.currentNoteId);
-
-      if (response.status) {
-        this.titleNote = "";
-        this.textNote = "";
-        this.goHome();
-      }
-    },
-  },
-};
+function goHome() {
+  router.push("/");
+}
 </script>
 
 <template>
   <div>
     <NoteHeader
       :isNoteSaved="isNoteSaved"
-      :isNoteEdited="isActiveBtnConfirm"
-      @handleToggleModal="setToggleModal"
+      :isNoteEdited="isNoteChanged"
       @handleSaveNote="handleSaveNote"
       @handleChangeNote="handleChangeNote"
+      @handleDeleteNote="handleDeleteNote"
     />
 
     <main class="inputs-container">
-      <TitleInput :content="titleNote" @isChanged="setTitleNote" />
-      <TextInput :content="textNote" @isChanged="setTextNote" focus />
+      <TitleInput
+        :content="titleNote"
+        @isChanged="(currentText) => titleNote = currentText"
+      />
+      <TextInput
+        :content="textNote"
+        @isChanged="(currentText) => textNote = currentText"
+        focus
+      />
     </main>
-
-    <ContainerModal :isActive="toggleModal" @handleToggleModal="setToggleModal">
-      <ul class="container-menu">
-        <li>
-          <a>Mover para</a>
-        </li>
-        <li @click="handleDeleteNote">
-          <a>Excluir</a>
-        </li>
-      </ul>
-    </ContainerModal>
   </div>
 </template>
 
@@ -146,37 +114,5 @@ div {
 ::-webkit-scrollbar {
   width: 0px;
   background-color: transparent;
-}
-
-/* Modal Styles */
-
-.container-menu {
-  position: absolute;
-  top: 35px;
-  right: calc(100% - 95%);
-
-  background: var(--color-background-light);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.container-menu li a {
-  display: block;
-  padding: 20px 24px 16px 24px;
-
-  color: var(--color-heading);
-  font-size: 1.4rem;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  user-select: none;
-}
-
-.container-menu li:last-child a {
-  padding: 16px 24px 20px 24px;
-}
-
-.container-menu li:hover {
-  transition: all 0.2s;
-  background: rgba(0, 0, 0, 0.2);
 }
 </style>
