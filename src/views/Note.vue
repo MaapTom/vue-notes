@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useChangeObserver } from "../utils/changeObserver.js";
 import { setChangeNote, setDeleteNote, getNewStorage } from "../store/actions.js";
