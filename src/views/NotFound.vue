@@ -1,16 +1,6 @@
-<script>
+<script setup>
   import NoNotes from '../components/icons/NoNotes.vue';
   import LeftArrow from '../components/icons/LeftArrow.vue';
-
-  export default {
-    data() {
-      return {}
-    },
-    components: {
-      NoNotes,
-      LeftArrow
-    }
-  }
 </script>
 
 <template>
@@ -30,7 +20,7 @@
 </template>
 
 <style scoped>
-  @import '..//assets/base.css';
+  @import '../assets/base.css';
 
   .message {
     display: flex;
