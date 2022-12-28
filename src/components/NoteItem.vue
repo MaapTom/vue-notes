@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted, watch, computed } from 'vue';
+  import { ref, onMounted, watch, computed, inject } from 'vue';
   import { useRouter } from 'vue-router';
   import filterDate from '../utils/filterDate';
   import { formatTitleNote, formatTextNote } from '../utils/formatText';
@@ -9,8 +9,7 @@
     titleNote: String,
     textNote: String,
     date: Object,
-    paramSearch: String,
-    mode: String,
+    paramSearch: String
   });
 
   const router = useRouter();
@@ -18,6 +17,7 @@
   const dateCreated = ref('');
   const currentTextNote = ref('');
   const currentTitleNote = ref('');
+  const currentMode = inject('currentMode');
 
   onMounted(() => {
     dateCreated.value = filterDate(props.date);
@@ -38,7 +38,7 @@
   });
 
   const noteMode = computed(() => {
-    return props.mode == 'Grid' ? 'grid-mode' : 'list-mode';
+    return currentMode.value == 'Grid' ? 'grid-mode' : 'list-mode';
   });
 
   function setAcentColor(compareText) {

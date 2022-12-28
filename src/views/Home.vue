@@ -1,67 +1,49 @@
-<script>
+<script setup>
+  import { ref, onMounted, computed, provide } from 'vue';
+  import { useRouter } from 'vue-router';
+  
   import { setNoteItemMode } from '../store/actions';
-
-  import Book from '../components/icons/Book.vue';
-  import Menu from '../components/icons/Menu.vue';
-
   import TabNotes from '../components/TabNotes.vue';
   import HomeHeader from '../components/HomeHeader.vue';
   import ButtonCreate from '../components/ButtonCreate.vue';
-  import ContainerModal from '../components/ContainerModal.vue';
 
-  export default {
-    data() {
-      return {
-        currentMode: '',
-        toggleModal: false,
-        toggleHeader: false,
-      }
-    },
-    components: {
-      Book,
-      Menu,
-      TabNotes,
-      HomeHeader,
-      ButtonCreate,
-      ContainerModal,
-    },
-    mounted() {
-      const getMode = localStorage.getItem('#_note-mode_#');
-      this.currentMode = getMode || 'Grid';
-    },
-    computed: {
-      actualMode() {
-        const options = {
-          'Grid': 'lista',
-          'List': 'grade'
-        }
-        return options[this.currentMode];
-      }
-    },
-    methods: {
-      setToggleModal() {
-        this.toggleModal = !this.toggleModal;
-      },
-      setToggleNoteMode(currentMode) {
-        const options = {
-          'Grid': 'List',
-          'List': 'Grid',
-        }
+  const router = useRouter(); 
+  const currentMode = ref('');
+  const toggleHeader = ref(false);
 
-        setNoteItemMode(options[currentMode]);
-        this.currentMode = options[currentMode];
-        this.setToggleModal();
-      },
-      setToggleHeader(currentState) {
-        if(currentState)
-          return this.toggleHeader = true;
-        
-        return this.toggleHeader = false;
-      },
-      goCreateNote() {
-        this.$router.push('/create-note');
-      },
+  onMounted(() => {
+    const getMode = localStorage.getItem('#_note-mode_#');
+    currentMode.value = getMode || 'Grid';
+  });
+  
+  provide('currentMode', currentMode);
+  const formatNameMode = computed(() => {
+    const options = {
+      'Grid': 'lista',
+      'List': 'grade'
     }
+    return options[currentMode.value];
+  });
+
+  function setToggleNoteMode() {
+    const options = {
+      'Grid': 'List',
+      'List': 'Grid'
+    }
+    
+    setNoteItemMode(options[currentMode.value]);
+    currentMode.value = options[currentMode.value];
+  }
+
+  function setToggleHeader(currentState) {
+    if(currentState)
+      return toggleHeader.value = true;
+    
+    return toggleHeader.value = false;
+  }
+  
+  function goCreateNote() {
+    router.push('/create-note');
   }
 
 </script>
@@ -70,34 +52,18 @@
   <div>
     <HomeHeader
       :isActive="toggleHeader"
-      @handleToggleModal='setToggleModal'
+      :nextMode="formatNameMode"
+      @handleToggleNoteMode="setToggleNoteMode"
     />
 
     <main class="container">
-      <TabNotes
-        :noteItemMode="currentMode"
-        @handleToggleHeader="setToggleHeader"
-      ></TabNotes>
+      <TabNotes @handleToggleHeader="setToggleHeader"></TabNotes>
     </main>
 
     <ButtonCreate
       :isActive="!toggleHeader"
       @handleClick="goCreateNote"
     />
-
-    <ContainerModal
-      :isActive="toggleModal"
-      @handleToggleModal="setToggleModal"
-    >
-      <ul class="container-menu">
-        <li @click="setToggleNoteMode(currentMode)">
-          <a>Visualização em {{actualMode}}</a>
-        </li>
-        <li>
-          <a>Feito por Marco &#60;3</a>
-        </li>
-      </ul>
-    </ContainerModal>
   </div>
 </template>
 
@@ -113,39 +79,5 @@ div {
   position: relative;
   width: 93%;
   margin: 0 auto;
-}
-
-/* Modal Styles */
-
-.container-menu {
-  position: absolute;
-  top: 35px;
-  right: calc(100% - 95%);
-
-  background: var(--color-background-light);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.container-menu li a {
-  display: block;
-
-  padding: 30px 24px 20px 24px;
-
-  color: var(--color-heading);
-  font-size: 1.4rem;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  user-select: none;
-}
-
-.container-menu li:last-child a {
-  padding: 20px 24px 30px 24px;
-}
-
-.container-menu li:hover {
-  transition: all .2s;
-
-  background: rgba(0, 0, 0, 0.05)
 }
 </style>

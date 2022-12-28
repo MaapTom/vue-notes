@@ -28,7 +28,6 @@
       return router.push('/');
       
     props.isNoteSaved ? emits('handleChangeNote') : emits('handleSaveNote');
-    console.log("Chamou")
     router.push('/');
   }
 

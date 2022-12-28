@@ -1,21 +1,18 @@
 <script setup>
-  import { ref, watch, computed, onMounted } from 'vue';
-  import { getNewStorage } from '../store/actions.js';
-  
+  import { ref, watch, computed, onMounted, inject } from 'vue';
+  import { getNewStorage } from '../store/actions.js';  
   import NoNotes from './icons/NoNotes.vue';
   import NoteItem from './NoteItem.vue';
   import SearchBar from './SearchBar.vue';
   import LineSeparator from './LineSeparator.vue';
 
-  const props = defineProps({
-    noteItemMode: String,
-  });
   const emit = defineEmits(['handleToggleHeader']);
 
   let mirrorNotes = [];
   const currentNotes = ref([]);
   const paramSearchBar = ref('');
   const stateSearchBar = ref(false);
+  const currentMode = inject('currentMode');
 
   onMounted(() => {
     const storageNotes = getNewStorage('#_content-notes_#');
@@ -37,7 +34,7 @@
   });
 
   const styleNoteMode = computed(() => {
-    return props.noteItemMode == 'Grid' ? 'grid-container' : 'list-container';
+    return currentMode.value == 'Grid' ? 'grid-container' : 'list-container';
   });
 
   function handleToggleHeader(currentState) {
@@ -61,7 +58,6 @@
           <NoteItem 
             v-for="note in currentNotes"
             :key="note.id"
-            :mode="noteItemMode"
             :date="note.date"
             :idNote="note.id"
             :textNote="note.textNote"

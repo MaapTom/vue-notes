@@ -2,12 +2,19 @@
   import { ref, watchEffect } from 'vue';
   import Book from './icons/Book.vue';
   import Menu from './icons/Menu.vue';
+  import ContainerModal from './ContainerModal.vue';
 
   const props = defineProps({
     isActive: Boolean,
+    nextMode: String,
   });
-  defineEmits(['handleToggleModal']);
+  const emits = defineEmits([
+    'handleToggleModal',
+    'handleToggleNoteMode'
+  ]);
+  
   const header = ref(null);
+  const toggleModal = ref(false);
 
   watchEffect(() => {
     if(props.isActive) 
@@ -25,6 +32,15 @@
     header.value?.classList.remove('animate-header-hide');
     header.value?.classList.add('animate-header-init');
   }
+  
+  function setToggleModal() {
+    toggleModal.value = !toggleModal.value;
+  }
+
+  function handleToggleNoteMode() {
+    emits('handleToggleNoteMode');
+    setToggleModal();
+  }
 
 </script>
 <template>
@@ -40,13 +56,27 @@
         </li>
         <li
           class="nav-item"
-          @click="$emit('handleToggleModal')"
+          @click="setToggleModal"
         >
           <Menu/>
         </li>
       </ul>
     </nav>
   </header>
+  
+  <ContainerModal
+    :isActive="toggleModal"
+    @handleToggleModal="setToggleModal"
+  >
+    <ul class="container-menu">
+      <li @click="handleToggleNoteMode">
+        <a>Visualização em {{ nextMode }}</a>
+      </li>
+      <li>
+        <a>Feito por Marco &#60;3</a>
+      </li>
+    </ul>
+  </ContainerModal>
 </template>
 <style scoped>
   @import '../assets/base.css';
@@ -93,6 +123,41 @@
 
   .animate-header-init {
     animation: slideTop .3s backwards;
+  }
+  
+  
+  /* Modal Styles */
+
+  .container-menu {
+    position: absolute;
+    top: 35px;
+    right: calc(100% - 95%);
+
+    background: var(--color-background-light);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .container-menu li a {
+    display: block;
+
+    padding: 30px 24px 20px 24px;
+
+    color: var(--color-heading);
+    font-size: 1.4rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    user-select: none;
+  }
+
+  .container-menu li:last-child a {
+    padding: 20px 24px 30px 24px;
+  }
+
+  .container-menu li:hover {
+    transition: all .2s;
+
+    background: rgba(0, 0, 0, 0.05)
   }
 
 </style>
