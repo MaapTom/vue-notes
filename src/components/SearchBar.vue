@@ -1,6 +1,7 @@
 <script setup>
 import { watch, ref } from "vue";
 import Close from "./icons/Close.vue";
+import Search from "./icons/Search.vue";
 
 defineProps({
   placeholder: String,
@@ -49,11 +50,11 @@ function setEndAnimate() {
         ref="input"
         class="input-search-bar"
         @click="handleClickInput"
-        :placeholder="'Procurar ' + placeholder"
+        :placeholder="'Procure uma ' + placeholder"
         @input="(event) => (searchBarText = event.target.value)"
       />
       <label for="input-search" class="search-image">
-        <img src="./icons/search_icon.svg" alt="Search Icon" />
+        <Search />
       </label>
       <a v-show="searchBarText" class="button-clear" @click="setClearInput">
         <Close />
@@ -71,12 +72,14 @@ function setEndAnimate() {
 #search-container {
   display: flex;
   align-items: center;
-  max-width: 100%;
+  width: 100%;
 
   overflow: hidden;
 }
 
 .wrapper {
+  display: flex;
+  align-items: center;
   width: 100%;
   position: relative;
 
@@ -98,21 +101,17 @@ function setEndAnimate() {
 .search-image {
   display: flex;
   align-items: center;
+  width: 14px;
   height: 100%;
   position: absolute;
   top: 0;
   left: 12px;
 }
 
-.search-image img {
-  width: 14px;
-}
-
 .button-clear {
   display: flex;
   align-items: center;
   position: absolute;
-  top: 25%;
   right: 12px;
 
   background-color: var(--color-text);
@@ -135,4 +134,41 @@ function setEndAnimate() {
   animation: slideRight 0.2s forwards;
   visibility: visible;
 }
+
+@media (min-width: 720px) {
+  #search-container {
+    width: auto;
+  }
+
+  .wrapper {
+    width: auto;
+  }
+
+  .input-search-bar {
+    width: 100%;
+    padding: 16px 58px;
+
+    color: var(--color-text);
+    font-size: 1.6rem;
+    background-color: var(--color-background-soft);
+    border-radius: 8px;
+  }
+
+  .input-search-bar:focus {
+    border: 0.5px solid var(--color-background-relight);
+  }
+
+  .search-image{
+    width: 16.4px;
+    left: 24px;
+  }
+
+  .button-clear {
+    right: 12px;
+    width: 21px;
+    background-color: transparent;
+  }
+
+}
+
 </style>

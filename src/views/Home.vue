@@ -1,29 +1,29 @@
 <script setup>
-  import { ref, onMounted, computed, provide } from 'vue';
-  import { useRouter } from 'vue-router';
-  
-  import { setNoteItemMode } from '../store/actions';
+  import { ref, onMounted, provide } from 'vue';
+  import { getNewStorage, setNoteItemMode } from '../store/actions';
   import TabNotes from '../components/TabNotes.vue';
+  import ModalNote from '../components/ModalNote.vue';
   import HomeHeader from '../components/HomeHeader.vue';
-  import ButtonCreate from '../components/ButtonCreate.vue';
 
-  const router = useRouter(); 
   const currentMode = ref('');
+  const storageNotes = ref('');
   const toggleHeader = ref(false);
+  const toggleModalNote = ref(false);
 
   onMounted(() => {
     const getMode = localStorage.getItem('#_note-mode_#');
     currentMode.value = getMode || 'Grid';
+    setInitializeStorage();
   });
-  
   provide('currentMode', currentMode);
-  const formatNameMode = computed(() => {
-    const options = {
-      'Grid': 'lista',
-      'List': 'grade'
-    }
-    return options[currentMode.value];
-  });
+  provide('storageNotes', storageNotes);
+  provide('setToggleNoteMode', setToggleNoteMode);
+  provide('setToggleModalNote', setToggleModalNote);
+  provide('setInitializeStorage', setInitializeStorage);
+
+  function setInitializeStorage() {
+    storageNotes.value = getNewStorage('#_content-notes_#');
+  }
 
   function setToggleNoteMode() {
     const options = {
@@ -41,29 +41,22 @@
     
     return toggleHeader.value = false;
   }
-  
-  function goCreateNote() {
-    router.push('/create-note');
+
+  function setToggleModalNote() {
+    toggleModalNote.value = !toggleModalNote.value;
   }
 
 </script>
 
 <template>
   <div>
-    <HomeHeader
-      :isActive="toggleHeader"
-      :nextMode="formatNameMode"
-      @handleToggleNoteMode="setToggleNoteMode"
-    />
+    <HomeHeader :isActive="toggleHeader"/>
 
     <main class="container">
       <TabNotes @handleToggleHeader="setToggleHeader"></TabNotes>
     </main>
 
-    <ButtonCreate
-      :isActive="!toggleHeader"
-      @handleClick="goCreateNote"
-    />
+    <ModalNote :isActive="toggleModalNote"/>
   </div>
 </template>
 
@@ -77,7 +70,14 @@ div {
 
 .container {
   position: relative;
-  width: 93%;
+  width: 90%;
   margin: 0 auto;
 }
+
+@media (min-width: 720px) {
+  .container {
+    margin: 60px auto 0;
+  }
+}
+
 </style>

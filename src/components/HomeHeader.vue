@@ -1,12 +1,13 @@
 <script setup>
-  import { ref, watchEffect } from 'vue';
+  import { useWindowSize } from '@vueuse/core';
+  import { ref, watchEffect, computed, inject } from 'vue';
+  import Logo from './icons/Logo.vue';
   import Book from './icons/Book.vue';
   import Menu from './icons/Menu.vue';
   import ContainerModal from './ContainerModal.vue';
 
   const props = defineProps({
     isActive: Boolean,
-    nextMode: String,
   });
   const emits = defineEmits([
     'handleToggleModal',
@@ -15,6 +16,18 @@
   
   const header = ref(null);
   const toggleModal = ref(false);
+  const { width } = useWindowSize();
+  const currentMode = inject('currentMode');
+  const setToggleNoteMode = inject('setToggleNoteMode');
+
+  const nextMode = computed(() => {
+    const options = {
+      'List': 'grade',
+      'Grid': 'lista'
+    }
+
+    return options[currentMode.value];
+  });
 
   watchEffect(() => {
     if(props.isActive) 
@@ -38,7 +51,7 @@
   }
 
   function handleToggleNoteMode() {
-    emits('handleToggleNoteMode');
+    setToggleNoteMode();
     setToggleModal();
   }
 
@@ -52,11 +65,13 @@
       <ul id="list-items">
         <span></span>
         <li class="nav-item">
-          <Book/>
+          <Book v-if="width < 720"/>
+          <Logo v-else/>
         </li>
         <li
           class="nav-item"
           @click="setToggleModal"
+          v-if="width < 720"
         >
           <Menu/>
         </li>
@@ -83,7 +98,7 @@
   @import '../assets/transitions.css';
 
   #container {
-    width: 85%;
+    width: 90%;
     margin: 0px auto;
     padding: 15px 0px;
 
@@ -105,7 +120,6 @@
   .nav-item:first-child {
     display: flex;
     margin: 0 auto;
-    background-color: tomato;
   }
 
   span {
@@ -158,6 +172,17 @@
     transition: all .2s;
 
     background: rgba(0, 0, 0, 0.05)
+  }
+
+  @media(min-width: 720px) {
+    #container {
+      margin: 30px auto 0px;
+    }
+
+   #list-items span {
+      display: none;
+    }
+
   }
 
 </style>

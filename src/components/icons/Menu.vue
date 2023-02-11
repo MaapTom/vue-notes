@@ -8,7 +8,7 @@
 
 <style scoped>
   .color-icon {
-    fill: var(--color-heading);
+    fill: var(--color-text);
     transition: all .2s;
   }
 

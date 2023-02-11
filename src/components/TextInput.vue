@@ -44,7 +44,7 @@ onMounted(() => {
   font-size: 1.7rem;
   font-weight: normal;
   line-height: 3rem;
-  background-color: var(--color-base);
+  background-color: transparent;
   color: var(--color-heading);
   border: none;
   outline: none;

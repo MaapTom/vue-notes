@@ -102,8 +102,13 @@
 .nav-item {
   cursor: pointer;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  transition: all .2s;
 }
-  
+
+.nav-item:hover {
+  opacity: 0.5;
+}
+
 /* Modal Styles */
 
 .container-menu {

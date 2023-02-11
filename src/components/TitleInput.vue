@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch, nextTick } from "vue";
 import { useResizeObserver } from '@vueuse/core';
+import { ref, watch, nextTick } from "vue";
 
 const props = defineProps({
   content: String,
@@ -55,7 +55,7 @@ function handleChangeContent(currentText) {
 
   font-size: 2rem;
   font-weight: bold;
-  background-color: var(--color-base);
+  background-color: transparent;
   color: var(--color-heading);
   outline: none;
   resize: none;
