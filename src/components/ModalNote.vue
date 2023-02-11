@@ -114,7 +114,7 @@
   }
 
   function setPreviousSave() {
-    if(isNoteSaved) {
+    if(isNoteSaved.value) {
       handleChangeNote();
     } else {
       handleSaveNote();
