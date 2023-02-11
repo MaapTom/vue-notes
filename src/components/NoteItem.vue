@@ -27,7 +27,6 @@
     currentTextNote.value = formatTextNote(props.titleNote, props.textNote);
     currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote);
 
-    console.log(currentTextNote.value?.length)
     setAcentColor(props.paramSearch);
   });
 
@@ -88,7 +87,7 @@
   <li
     class="note-item"
     :class="noteMode"
-    @click="goNote(this.idNote)"
+    @click="goNote(idNote)"
     @touchmove="setAnimate()" 
     @touchend="setEndAnimate()"
     ref="li"
