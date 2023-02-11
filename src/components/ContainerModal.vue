@@ -1,26 +1,19 @@
-<script>
-  export default {
-    props: ['isOpen'],
-    emits: ['changeStateModal'],
-    data() {
-      return {}
-    },
-    methods: {
-      handleClickBgModal(){
-        this.$emit('changeStateModal');
-      }
-    }
-  }
+<script setup>
+  
+  defineProps({
+    isActive: Boolean,
+  });
+  defineEmits(['handleToggleModal']);
+  
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="fade">
       <section
-        v-if="isOpen"
-        ref="bgModal"
+        v-if="isActive"
         class="bg-modal"
-        @click.self="handleClickBgModal"
+        @click.self="$emit('handleToggleModal')"
       >
         <slot></slot>
       </section>
@@ -37,7 +30,7 @@
   width: 100%;
   height: 100%;
 
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
 

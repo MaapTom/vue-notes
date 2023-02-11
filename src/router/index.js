@@ -22,6 +22,11 @@ const routes = [
     component: Note,
   },
   {
+    path: '/note-desktop/:id',
+    name: 'Note-desktop',
+    component: Home
+  },
+  {
     path: '/:pathMatch(.*)*',
     component: NotFound
   },

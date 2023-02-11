@@ -1,5 +1,5 @@
 <template>
-  <svg height="17" viewBox="0 0 21 21" width="17" xmlns="http://www.w3.org/2000/svg" class="color-icon">
+  <svg height="21" viewBox="0 0 21 21" width="21" xmlns="http://www.w3.org/2000/svg" class="color-icon">
     <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" transform="translate(5 5)">
       <path d="m10.5 10.5-10-10z"/><path d="m10.5.5-10 10"/>
     </g>
@@ -10,7 +10,7 @@
 @import '../../assets/base.css';
 
 .color-icon {
-  color: var(--vt-white);
+  color: var(--vt-gray400);
   transition: all .2s;
 }
 

@@ -1,69 +1,63 @@
-<script>
-  export default {  
-    emits: ['changeContentTitleBox'],
-    props: ['content'],
-    data() {
-      return {
-        inputContent: '',
-      }
-    },
-    watch: {
-      content: {
-        handler() {
-          this.inputContent = this.content;
-          this.$refs.inputTitle.style.height = this.content.length + "px";
-        }
-      }
-    },
-    methods: {
-      emitChangeContent(inputEvent) {
-        let contentInserted = inputEvent.target.value;
+<script setup>
+import { useResizeObserver } from '@vueuse/core';
+import { ref, watch, nextTick } from "vue";
 
-        this.$emit('changeContentTitleBox', contentInserted);
-        this.setInputContent(contentInserted);
-        this.resizeInput();
-      },
-      setInputContent(content) {
-        this.inputContent = content;
-      },
-      resizeInput() {
-        let currentScrollHeight = this.$refs.inputTitle.scrollHeight;
+const props = defineProps({
+  content: String,
+});
+const emit = defineEmits(["isChanged"]);
 
-        this.$refs.inputTitle.style.height = "5px";
-        this.$refs.inputTitle.style.height = currentScrollHeight + "px";
-      }
-    }
-  }
+const textarea = ref(null);
+const inputContent = ref("");
+
+nextTick(() => {
+  //Resize to initial render
+  textarea.value.style.height = textarea.value.scrollHeight + "px";
+});
+
+watch(inputContent, () => {
+  textarea.value.style.height = "auto";
+  textarea.value.style.height = (textarea.value.scrollHeight) + "px";
+});
+
+useResizeObserver(textarea, () => {
+  textarea.value.style.height = "auto";
+  textarea.value.style.height = textarea.value.scrollHeight + "px";
+});
+
+function handleChangeContent(currentText) {
+  emit("isChanged", currentText);
+  inputContent.value = currentText;
+}
 </script>
 
 <template>
   <textarea
-    ref="inputTitle"
+    ref="textarea"
     class="input-title"
     placeholder="Title"
-    @input="event => emitChangeContent(event)"
-    v-model="inputContent"
+    @input="(event) => handleChangeContent(event.target.value)"
+    :value="content"
     rows="1"
   >
-  </textarea>  
+  </textarea>
 </template>
 <style scoped>
-  @import '../assets/base.css';
+@import "../assets/base.css";
 
-  ::placeholder {
-    opacity: 0.5;
-  }
+::placeholder {
+  opacity: 0.5;
+}
 
-  .input-title {
-    width: 100%;
-    min-height: 24px;
+.input-title {
+  width: 100%;
+  min-height: 24px;
 
-    font-size: 2rem;
-    font-weight: bold;
-    background-color: var(--color-base);
-    color: var(--color-heading);
-    border: none;
-    outline: none;
-    resize: none;
-  }
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: transparent;
+  color: var(--color-heading);
+  outline: none;
+  resize: none;
+}
 </style>

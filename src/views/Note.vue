@@ -1,126 +1,93 @@
-<script>
-  import { setChangeNote, setDeleteNote, getNewStorage } from '../store/actions.js';
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useChangeObserver } from "../utils/changeObserver.js";
+import { setChangeNote, setDeleteNote, getNewStorage } from "../store/actions.js";
+import TextInput from "../components/TextInput.vue";
+import TitleInput from "../components/TitleInput.vue";
+import NoteHeader from "../components/NoteHeader.vue";
 
-  import Menu from '../components/icons/Menu.vue';
-  import Check from '../components/icons/Check.vue';
-  import LeftArrow from '../components/icons/LeftArrow.vue';
-  
-  import TextInput from '../components/TextInput.vue';
-  import TitleInput from '../components/TitleInput.vue';
-  import NoteHeader from '../components/NoteHeader.vue';
-  import ContainerModal from '../components/ContainerModal.vue';
+const route = useRoute();
+const router = useRouter();
+const textNote = ref("");
+const titleNote = ref("");
+const lastSavedText = ref("");
+const lastSavedTitle = ref("");
+const currentNote = ref("");
+const paramsNoteId = ref("");
+const {
+  isNoteChanged
+} = useChangeObserver(lastSavedTitle, lastSavedText, titleNote, textNote);
 
-  export default {
-    data() {
-      return {
-        textNote: '',
-        titleNote: '',
-        currentNote: '',
-        paramsNoteId: '',
-        toggleModal: false,
-        isActiveBtnConfirm: false,
-      }
-    },
-    components: {
-      Menu,
-      Check,
-      LeftArrow,
-      TextInput,
-      TitleInput,
-      NoteHeader,
-      ContainerModal,
-    },
-    beforeMount() {
-      this.paramsNoteId = this.$route.params.id;
-
-      const getStorageNotes = getNewStorage("#_content-notes_#");
-      const currentNote = getStorageNotes.filter((eachNote) => {
-        return eachNote.id == this.paramsNoteId;
-      })
-
-      if (currentNote == '') {
-        return this.$router.push('/not-found');
-      }
-      
-      this.currentNote = currentNote[0];
-    },
-    mounted() {   
-      this.textNote = this.currentNote.textNote;
-      this.titleNote = this.currentNote.titleNote;
-
-      this.$watch($data => [$data.titleNote, $data.textNote], () => {
-        if (this.titleNote != this.currentNote.titleNote || this.currentNote.textNote != '') {
-          this.isActiveBtnConfirm = true;
-        } else {
-          this.isActiveBtnConfirm = false;
-        }
-      })
-    },
-    methods: {
-      goHome() {
-        setTimeout(() => {
-          this.$router.push('/');
-        }, 0)
-      },
-      setToggleModal() {
-        this.toggleModal = !this.toggleModal;
-      },
-      setTitleInput(content) {
-        this.titleNote = content;
-      },
-      setTextNote(content) {
-        this.textNote = content;
-      },
-      handleChangeNote() {
-        const response = setChangeNote(this.paramsNoteId, this.titleNote, this.textNote);
-
-        if (response.status) {
-          this.isActiveBtnConfirm = false;
-        }
-      },
-      handleDeleteNote() {
-        const response = setDeleteNote(this.paramsNoteId);
-        
-        if (response.status) {
-          this.goHome();
-        }
-      },
-    }
+onMounted(() => {
+  paramsNoteId.value = route.params.id;
+  const storageNotes = getNewStorage('#_content-notes_#');
+  const filteredNotes = storageNotes.filter((eachNote) => {
+    return eachNote.id == paramsNoteId.value;
+  });
+    
+  if (filteredNotes == "") {
+    return router.push("not-found");
   }
+  
+  currentNote.value = filteredNotes[0];
+  textNote.value = currentNote.value.textNote;
+  titleNote.value = currentNote.value.titleNote;
+  lastSavedText.value = currentNote.value.textNote;
+  lastSavedTitle.value = currentNote.value.titleNote;
+})
+
+function handleChangeNote() {
+  const response = setChangeNote(
+    paramsNoteId.value,
+    titleNote.value,
+    textNote.value
+  );
+  
+  if (response.status) {
+    isNoteChanged.value = false;
+    lastSavedText.value = textNote.value;
+    lastSavedTitle.value = titleNote.value;
+  }
+}
+
+function handleDeleteNote() {
+  const response = setDeleteNote(paramsNoteId.value);
+  
+  if (response.status) {
+    goHome();
+  }
+}
+
+function goHome() {
+  router.push("/");
+}
 </script>
 
 <template>
   <div>
     <NoteHeader
       :isNoteSaved="true"
-      :btnConfirmActive="isActiveBtnConfirm"
-      @toggleModal="setToggleModal"
-      @changeNote="handleChangeNote"
-      @deleteNote="handleDeleteNote"
+      :isNoteEdited="isNoteChanged"
+      @handleChangeNote="handleChangeNote"
+      @handleDeleteNote="handleDeleteNote"
     />
 
     <main class="inputs-container">
       <TitleInput
         :content="titleNote"
-        @changeContentTitleBox="setTitleInput"
+        @isChanged="(currentText) => titleNote = currentText"
       />
       <TextInput
         :content="textNote"
-        @changeContentTextBox="setTextNote"
+        @isChanged="(currentText) => textNote = currentText"
       />
     </main>
-
-    <ContainerModal :isOpen="toggleModal" @changeStateModal="setToggleModal">
-      <ul class="container-menu">
-        <li><a>Mover para</a></li>
-        <li @click="handleDeleteNote"><a>Excluir</a></li>
-      </ul>
-    </ContainerModal>
   </div>
 </template>
 
 <style scoped>
-@import '../assets/base.css';
+@import "../assets/base.css";
 
 div {
   position: absolute;
@@ -130,7 +97,7 @@ div {
 
   overflow: scroll;
   background-color: var(--color-base);
-  scrollbar-color: transparent transparent;  
+  scrollbar-color: transparent transparent;
 }
 
 .inputs-container {
@@ -154,13 +121,13 @@ div {
   position: absolute;
   top: 35px;
   right: calc(100% - 95%);
-  
+
   background: var(--color-background-light);
   border-radius: 10px;
   overflow: hidden;
 }
 
-.container-menu li a{
+.container-menu li a {
   display: block;
 
   padding: 20px 24px 16px 24px;
@@ -170,12 +137,12 @@ div {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-.container-menu li:last-child a{
+.container-menu li:last-child a {
   padding: 16px 24px 20px 24px;
 }
 
 .container-menu li:hover {
-  transition: all .2s;
+  transition: all 0.2s;
   background: rgba(0, 0, 0, 0.2);
 }
 </style>

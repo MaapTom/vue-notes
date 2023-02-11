@@ -3,7 +3,9 @@
 /* Modal Transitions */
 
 .fade-enter-active,
-.fade-leave-active {
+.fade-leave-active,
+.fadeBottom-leave-active,
+.fadeBottom-enter-active {
   transition: all .2s;
 }
 
@@ -15,12 +17,28 @@
 .fade-enter-to,
 .fade-leave-to {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateY(0);
 }
 
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-10px)
+}
+
+.fadeBottom-enter-from {
+  opacity: 0;
+  transform: translateY(100px);
+}
+
+.fadeBottom-enter-to,
+.fadeBottom-leave-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fadeBottom-leave-to {
+  opacity: 0;
+  transform: translateY(100px);
 }
 
 /* Route Transitions */

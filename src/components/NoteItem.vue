@@ -1,95 +1,104 @@
-<script>
-  import filterDate from '../utils/filterDate';
+<script setup>
+  import { useRouter } from 'vue-router';
+  import { useWindowSize } from '@vueuse/core';
+  import { ref, onMounted, watch, computed, inject } from 'vue';
   import { formatTitleNote, formatTextNote } from '../utils/formatText';
+  import filterDate from '../utils/filterDate';
 
-  export default {
-    props: ['idNote','titleNote', 'textNote', 'date', 'paramSearch', 'mode'],
-    data() {
-      return {
-        currentDate: '',
-        currentTextNote: '',
-        currentTitleNote: '',
-        mirrorTextNote: '',
-        mirrorTitleNote: '',
-      }
-    },
-    mounted() {
-      this.currentDate = filterDate(this.date);
-      this.currentTextNote = formatTextNote(this.titleNote, this.textNote);
-      this.currentTitleNote = formatTitleNote(this.titleNote, this.textNote);
+  const props = defineProps({
+    idNote: String,
+    titleNote: String,
+    textNote: String,
+    date: Object,
+    paramSearch: String
+  });
 
-      this.mirrorTextNote = formatTextNote(this.titleNote, this.textNote);
-      this.mirrorTitleNote = formatTitleNote(this.titleNote, this.textNote);
+  const li = ref(null);
+  const router = useRouter();
+  const dateCreated = ref('');
+  const currentTextNote = ref('');
+  const currentTitleNote = ref('');
+  const { width } = useWindowSize();
+  const currentMode = inject('currentMode');
+  const setToggleModalNote = inject('setToggleModalNote');
 
-      this.setAcentColor(this.paramSearch);
-    },
-    watch: {
-      paramSearch(currentParam) {
-        this.setAcentColor(currentParam);
-      }
-    },
-    computed: {
-      noteMode() {
-        const options = {
-          'Grid': 'grid-mode',
-          'List': 'list-mode',
-        }
+  onMounted(() => {
+    dateCreated.value = filterDate(props.date);
+    currentTextNote.value = formatTextNote(props.titleNote, props.textNote);
+    currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote);
 
-        return options[this.mode];
-      }
-    },
-    methods: {
-      setAnimate() {
-        this.$refs.noteItem.classList.add('animate-note');
-      },
-      setEndAnimate() {
-        this.$refs.noteItem.classList.remove('animate-note');
-      },
-      goNote(receivedIdNote) {
-        this.setAnimate();
-        setTimeout(() => {
-          this.$router.push(`/note/${receivedIdNote}`);
-        }, 300)
-      },
-      setAcentColor(compareText) {
-        if (compareText.trim() == '') {
-          return (
-            this.currentTitleNote = this.mirrorTitleNote,
-            this.currentTextNote = this.mirrorTextNote
-          );
-        }
+    setAcentColor(props.paramSearch);
+  });
 
-        this.currentTitleNote = 
-          this.mirrorTitleNote
-            ?
-            this.mirrorTitleNote.replace(compareText, `<span style="color: red">${compareText}</span>`)
-            : 
-            this.mirrorTitleNote;
-          
-        this.currentTextNote = 
-          this.mirrorTextNote 
-            ?
-            this.mirrorTextNote.replace(compareText, `<span style="color: red">${compareText}</span>`)
-            : 
-            this.mirrorTextNote;
-      }
+  watch(() => props.paramSearch, (currentParam) => {
+    if(currentParam.trim() == '') {
+      return (
+        currentTextNote.value = formatTextNote(props.titleNote, props.textNote),
+        currentTitleNote.value = formatTitleNote(props.titleNote,props.textNote)
+      );
     }
+    setAcentColor(currentParam);
+  });
+
+  const noteMode = computed(() => {
+    return currentMode.value == 'Grid' ? 'grid-mode' : 'list-mode';
+  });
+
+  function setAcentColor(compareText) {
+    const mirrorTextNote = formatTextNote(props.titleNote, props.textNote);
+    const mirrorTitleNote = formatTitleNote(props.titleNote,props.textNote);
+
+    currentTextNote.value = mirrorTextNote?.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
+    currentTitleNote.value = mirrorTitleNote?.
+      replace(
+        compareText,
+        `<span style="color: red">${compareText}</span>`
+      );
   }
+  
+  function setAnimate() {
+    li.value?.classList.add('animate-note');
+  };
+
+  function setEndAnimate() {
+    li.value?.classList.remove('animate-note');
+  }
+
+  function goNote(receivedIdNote) {
+    setAnimate();
+
+    if(width.value > 720) {
+      setToggleModalNote();
+      return router.push(`/note-desktop/${receivedIdNote}`);
+    }
+
+    setTimeout(() => {
+      router.push(`/note/${receivedIdNote}`);
+    }, 300);
+  }
+
 </script>
 
 <template>
   <li
     class="note-item"
     :class="noteMode"
-    @click="goNote(this.idNote)"
+    @click="goNote(idNote)"
     @touchmove="setAnimate()" 
     @touchend="setEndAnimate()"
-    ref="noteItem"
+    ref="li"
   >
     <h1 v-html="currentTitleNote"></h1>
     <p v-html="currentTextNote"></p>
-    <span>
-      {{ currentDate }}
+    <template v-if="noteMode == 'list-mode' && currentTextNote?.length >= 0">
+      <span class="line-separator"></span>
+    </template>
+    <span class="note-date">
+      {{ dateCreated }}
     </span>
   </li>
 </template>
@@ -114,7 +123,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap; 
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: var(--color-heading); 
 }
@@ -127,7 +136,7 @@
 
   font-size: 1.6rem;
   line-height: 2rem;
-  font-weight: normal;
+  font-weight: 400;
   color: var(--color-text);
   overflow: hidden;
 }
@@ -160,8 +169,7 @@
 }
 
 .grid-mode p {
-  -webkit-line-clamp: 4;
-  font-weight: 500;
+  -webkit-line-clamp: 3;
   line-height: 2.5rem;
 }
 
@@ -172,4 +180,102 @@
 .animate-note {
   animation: hoverAnimate .4s forwards;
 }
+
+@media(min-width: 1137px) {
+  .note-item.grid-mode {
+    max-width: 245px !important;
+  }
+}
+
+@media(min-width: 840px) {
+  .note-item.grid-mode {
+    flex: 1 1 245px !important;
+  }
+}
+
+@media(min-width: 720px) {
+
+  /* Geral */
+  .animate-note {
+    animation: none;
+  }
+
+  .note-item {
+    transition: all .5s;
+    border: 0.5px solid var(--color-background-light);
+  }
+
+  .note-item:hover {
+    border: 0.5px solid var(--color-background-relight);
+    box-sizing: border-box;
+    background-color: var(--color-background-soft);
+  }
+
+  /*Grid Mode*/
+
+  .note-item.grid-mode {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 200px;
+    max-width: 513px;
+    height: 211px;
+    margin: 0px 24px 16px 0px;
+    padding: 24px;
+  }
+
+  .note-item.grid-mode:last-child {
+    flex: 1 1 200px;
+  }
+
+  .note-item.grid-mode h1{
+    margin-bottom: 12px;
+  }
+
+  .note-item.grid-mode span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-size: 1.2rem;
+  }
+
+  /* List Mode*/
+
+  .note-item.list-mode {
+    display: grid;
+    grid-template-columns: max-content max-content 1fr;
+    grid-template-areas: "title separator content" 
+                          "date separator content";
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 24px;
+    border-radius: 8px;
+  }
+
+  .note-item.list-mode h1 {
+    grid-area: title;
+    max-width: 30vw;
+  }
+
+  
+  .line-separator {
+    grid-area: separator;
+    display: block;
+    width: 1px;
+    height: 38px;
+    margin: 0px 12px;
+    border: 1px dashed var(--vt-gray300);
+  }
+  
+  .note-item.list-mode p {
+    grid-area: content;
+    line-height: 150%;
+    margin-bottom: 0px;
+  }
+  .note-item.list-mode .note-date {
+    grid-area: date;
+    font-size: 1.2rem;
+  }
+}
+
 </style>
